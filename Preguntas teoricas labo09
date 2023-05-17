@@ -1,0 +1,32 @@
+1. ¿Qué es una coroutine en Kotlin y cómo se diferencia de un hilo
+tradicional?
+Es un mecanismo de programación que permite escribir código asíncrono de manera
+secuencial y estructurada (adicionalmente nos ayuda a correr código de forma asíncrona). La mayor diferencia frente alos hilos tradicionales, es que las coroutines son concurrencia cooperativa, lo que significa que el programador tiene el control para decidir cuándo se suspende y reanuda, mientras los hilos tradicionales se ejecutan junto a la aplicación.
+
+2. ¿Cuál es la importancia de la suspensión en las coroutines y cómo se implementa?
+Su importancia capacidad de suspender momentáneamente la ejecución de una coroutine sin obstruir el main thread. Cuando se suspende una coroutine, el hilo que estaba utilizando se libera para que otras coroutines o acciones puedan utilizarlo.
+
+Se implementa mediante(suspend fun): (observando que ejecuta y libera los hilos)
+ private suspend fun downloadUserData() {
+        for (i in 1..200000) {
+            // This is NOT running in the main thread
+            Log.i(MainActivity.APP_TAG, "Downloading user $i in ${Thread.currentThread().name}")
+
+            // This is an ERROR
+            // tvMessage.text = "Downloading user $i" // Can not be called in a background thread
+
+            // Switch to main thread to update view
+            withContext(Dispatchers.Main) {
+                binding.messageTextView.text = "Downloading user $i"
+            }
+            delay(100)
+        }
+    }
+
+3. ¿Cuál es el propósito del Dispatcher en las coroutines y cómo se elige uno adecuado para cada tarea?
+Su próposito es especificar en qué hilo se ejecutra la courtine, pues con el dispatcher es que se nos permite movilizarnos, hacia el hilo principal y poder actualizar la vista. Una de las maneras para crear un dispatcher adecuado es crear un dispatcher personalizado y adaptarse al caso de uso en específico que se ha solicitado. La segunda manera de escojer el dispatcher adecuado es separarlo entre los 4 dispatchers principales Main dispatcher, IO Dispatcher, Default Dispatcher, Unconfined Dispatcher 
+
+4. ¿Cuál es el propósito y el uso de la función async en las coroutines?
+Su propósito es ser el constructor utilizado para lanzar coroutines de manera asíncrona se obtiene el resultado utilizando el objeto Deferred. El resultado se obtiene mediante la función await(). Su utlidada se ve cuando se deben ejecutar tareas concurrentes y combinar los resultados, además de poder retornar dichos resultados.
+
+
